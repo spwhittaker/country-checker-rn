@@ -1,0 +1,36 @@
+        // if (currentCountry.flag) {
+        //   console.log(currentCountry.flag, 'current flag');
+        //   const getColours = async () => {
+        //     try {
+        //       await Vibrant.from(currentCountry.flag).getPalette((err, pal) => {
+        //         if (err) {
+        //           console.log(err);
+        //         }
+
+        //         console.log(pal);
+        //         if (pal) {
+        //           const paletteColors = {
+        //             DarkMuted: RGBToHex(pal.DarkMuted._rgb),
+        //             DarkVibrant: RGBToHex(pal.DarkVibrant._rgb),
+        //             DarkVibrantContrast: lighten(
+        //               0.2,
+        //               RGBToHex(pal.DarkVibrant._rgb),
+        //             ),
+        //             DarkerMuted: darken(0.1, RGBToHex(pal.DarkMuted._rgb)),
+        //             DarkestMuted: darken(0.2, RGBToHex(pal.DarkMuted._rgb)),
+        //             LightMuted: RGBToHex(pal.LightMuted._rgb),
+        //             LightVibrant: RGBToHex(pal.LightVibrant._rgb),
+        //             LighterMuted: lighten(0.3, RGBToHex(pal.LightMuted._rgb)),
+        //             LightestMuted: lighten(0.5, RGBToHex(pal.LightMuted._rgb)),
+        //             Muted: RGBToHex(pal.Muted._rgb),
+        //             Vibrant: RGBToHex(pal.Vibrant._rgb),
+        //           };
+        //           setAccentColors(paletteColors);
+        //         }
+        //       });
+        //     } catch (err) {
+        //       console.error(err);
+        //     }
+        //   };
+        //   getColours();
+        // }

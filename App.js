@@ -16,9 +16,13 @@ import {
   StatusBar,
   TextInput,
   FlatList,
-  Image,
   Dimensions,
+  Image,
 } from 'react-native';
+import localCountryData from './src/countryData';
+import colourData from './src/colourData';
+
+/* import Image from 'react-native-scalable-image'; */
 import * as Vibrant from 'node-vibrant';
 import {
   Header,
@@ -27,11 +31,11 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import {lighten, darken} from 'polished';
+
 import {defaultSearch, nameSearch} from './src/utils/API';
 import List from './src/Components/List';
-import SvgCssUri from './src/Components/SvgCssUri';
 
+import images from './assets/images/index';
 const App = () => {
   const [countryNames, setCountryNames] = useState([]);
   const [countryData, setCountryData] = useState([]);
@@ -41,24 +45,13 @@ const App = () => {
     capital: null,
     flag: null,
     otherNames: null,
+    alpha3Code: null,
+    accentColours: {},
   });
 
-  const [accentColors, setAccentColors] = useState({});
-
-  const RGBToHex = ([r, g, b]) => {
-    r = Math.round(r).toString(16);
-    g = Math.round(g).toString(16);
-    b = Math.round(b).toString(16);
-    if (r.length === 1) r = '0' + r;
-    if (g.length === 1) g = '0' + g;
-    if (b.length === 1) b = '0' + b;
-    r = r.toUpperCase();
-    g = g.toUpperCase();
-    b = b.toUpperCase();
-    return '#' + r + g + b;
-  };
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
+
   useEffect(() => {
     let ignore = false;
 
@@ -67,7 +60,7 @@ const App = () => {
         let result = null;
         if (searchText === '') {
           try {
-            result = await defaultSearch.get('/');
+            result = {data: localCountryData};
           } catch (err) {
             console.error(err);
           }
@@ -89,8 +82,15 @@ const App = () => {
           : [];
         const countries = result
           ? result.data
-              .map(({name, capital, flag, altSpellings}) => {
-                return {name, capital, flag, otherNames: [...altSpellings]};
+              .map(({name, capital, altSpellings, alpha3Code}) => {
+                return {
+                  name,
+                  capital,
+                  flag: images[alpha3Code.toLowerCase()],
+                  accentColours: colourData[alpha3Code.toLowerCase()],
+                  otherNames: [...altSpellings],
+                  alpha3Code: alpha3Code.toLowerCase(),
+                };
               })
               .sort((a, b) => {
                 const textA = a.name.toUpperCase();
@@ -101,51 +101,13 @@ const App = () => {
 
         setCountryNames(names);
         setCountryData(countries);
-        if (currentCountry.flag) {
-          async () => {
-            try {
-              const palette = await Vibrant.from(
-                currentCountry.flag,
-              ).getPalette();
-              console.log(palette);
-              if (palette) {
-                const paletteColors = {
-                  DarkMuted: RGBToHex(palette.DarkMuted._rgb),
-                  DarkVibrant: RGBToHex(palette.DarkVibrant._rgb),
-                  DarkVibrantContrast: lighten(
-                    0.2,
-                    RGBToHex(palette.DarkVibrant._rgb),
-                  ),
-                  DarkerMuted: darken(0.1, RGBToHex(palette.DarkMuted._rgb)),
-                  DarkestMuted: darken(0.2, RGBToHex(palette.DarkMuted._rgb)),
-                  LightMuted: RGBToHex(palette.LightMuted._rgb),
-                  LightVibrant: RGBToHex(palette.LightVibrant._rgb),
-                  LighterMuted: lighten(0.3, RGBToHex(palette.LightMuted._rgb)),
-                  LightestMuted: lighten(
-                    0.5,
-                    RGBToHex(palette.LightMuted._rgb),
-                  ),
-                  Muted: RGBToHex(palette.Muted._rgb),
-                  Vibrant: RGBToHex(palette.Vibrant._rgb),
-                };
-                setAccentColors(paletteColors);
-              }
-            } catch (err) {
-              console.error(err);
-            }
-          };
-        }
       }
     }
     fetchData(searchText);
-
     return () => {
       ignore = true;
     };
   }, [currentCountry, searchText]);
-  const originalWidth = 519;
-  const originalHeight = 260;
-  const aspectRatio = originalWidth / originalHeight;
 
   return (
     <>
@@ -155,16 +117,15 @@ const App = () => {
           <View>
             <Text>Current Country</Text>
             <Text>{currentCountry.name}</Text>
-            <Text>Accent Colour: {accentColors.DarkMuted}</Text>
-            <Text>Flag: {currentCountry.flag}</Text>
-            <View
-              style={{
-                width: windowWidth,
-                aspectRatio,
-                borderColor: 'black',
-                borderWidth: 2,
-              }}>
-              <SvgCssUri uri={currentCountry.flag} svgWidth={windowWidth} />
+            <Text style={{color: currentCountry.accentColours.DarkMuted}}>
+              {JSON.stringify(currentCountry.accentColours)}
+            </Text>
+            <View style={styles.imageContainer}>
+              <Image
+                source={currentCountry.flag}
+                style={styles.image}
+                resizeMode={'contain'}
+              />
             </View>
           </View>
         )}
@@ -218,6 +179,19 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  imageContainer: {
+    borderColor: 'black',
+    borderWidth: 2,
+
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height / 4,
+    margin: 5,
   },
 
   footer: {
