@@ -21,9 +21,10 @@ import {
 } from 'react-native';
 import localCountryData from './src/countryData';
 import colourData from './src/colourData';
+import CountryCard from './src/Components/CountryCard';
 
 /* import Image from 'react-native-scalable-image'; */
-import * as Vibrant from 'node-vibrant';
+
 import {
   Header,
   LearnMoreLinks,
@@ -114,20 +115,7 @@ const App = () => {
       <StatusBar barStyle="dark-content" />
       <SafeAreaView>
         {currentCountry.name !== null && (
-          <View>
-            <Text>Current Country</Text>
-            <Text>{currentCountry.name}</Text>
-            <Text style={{color: currentCountry.accentColours.DarkMuted}}>
-              {JSON.stringify(currentCountry.accentColours)}
-            </Text>
-            <View style={styles.imageContainer}>
-              <Image
-                source={currentCountry.flag}
-                style={styles.image}
-                resizeMode={'contain'}
-              />
-            </View>
-          </View>
+          <CountryCard currentCountry={currentCountry} />
         )}
         <ScrollView
         /*  contentInsetAdjustmentBehavior="automatic"
@@ -179,19 +167,6 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
-  },
-  imageContainer: {
-    borderColor: 'black',
-    borderWidth: 2,
-
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height / 4,
-    margin: 5,
   },
 
   footer: {
